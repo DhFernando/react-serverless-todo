@@ -1,0 +1,61 @@
+service: todo-backend
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+
+# you can overwrite defaults here
+  stage: dev
+  region: us-east-2
+  environment:
+    # bucketName: ${self:custom.bucketName}
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+functions:
+  createTodo:
+    handler: handler.createTodo
+    events:
+      - http:
+          path: todo/create
+          method: POST
+          cors: true 
+  getTodosByUser:
+    handler: handler.getTodosByUser
+    events:
+      - http:
+          path: todo/get/{creatorId}
+          method: GET
+          cors: true 
+  RemoveTodo:
+    handler: handler.removeTodo
+    events:
+      - http:
+          path: todo/remove/{_id}
+          method: DELETE
+          cors: true 
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:provider.stage}-todo-user-pool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties: 
+        ClientName: ${self:provider.stage}-todo-user-pool-client
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false
+
