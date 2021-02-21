@@ -18,6 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy-dev": "aws s3 sync ./build/ s3://todoerverless-20210221150902-hostingbucket-dev --region us-east-2",
+    "cache-bust-dev": "aws cloudfront create-invalidation --distribution-id E2RABGDLQMNDGC --paths '/'",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

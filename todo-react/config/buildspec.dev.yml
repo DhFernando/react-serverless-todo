@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+    commands:
+      - echo Installing Web dependencies
+      - cd todo-react
+      - npm install --silent
+      - echo Finished installing Web dependencies
+  build:
+    commands: 
+      - echo Building artifacts
+      - npm run-script build
+      - echo Deploying artifacts
+      - npm run deploy-dev
+      - echo Invalidating cloudfront cache
+      - npm run cache-bust-dev
+
+cache:
+  paths:
+    - "todo-react/node_modules/**/*"
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: "todo-react/build*"
+  discard-paths: no
